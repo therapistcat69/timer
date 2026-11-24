@@ -1,0 +1,3 @@
+import mongoose,{Schema} from 'mongoose';
+const TimerStateSchema=new Schema({key:{type:String,default:'singleton',unique:true},isRunning:{type:Boolean,default:false},activeSessionStart:{type:Date,default:null},accumulatedSessionMs:{type:Number,default:0},activeTag:{type:String,default:'Deep Work'},logicalDate:{type:String,default:''},dailyGoalHours:{type:Number,default:6},resetHour:{type:Number,default:5},autoPauseAtReset:{type:Boolean,default:false},tags:{type:[String],default:['Deep Work','Coding','Study','Reading']}},{timestamps:true});
+export default mongoose.models.TimerState || mongoose.model('TimerState',TimerStateSchema);

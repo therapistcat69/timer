@@ -1,0 +1,7 @@
+const zone = process.env.NEXT_PUBLIC_TIMEZONE || 'Asia/Kolkata';
+function parts(date: Date) { return new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' }).formatToParts(date).reduce((o: Record<string,string>, p) => (o[p.type]=p.value,o),{}); }
+export function logicalDate(date = new Date(), resetHour = 5) { const p=parts(date); let d=new Date(`${p.year}-${p.month}-${p.day}T00:00:00Z`); if(Number(p.hour)<resetHour)d.setUTCDate(d.getUTCDate()-1); return d.toISOString().slice(0,10); }
+export function nextResetMs(now=Date.now(), resetHour=5) { const p=parts(new Date(now)); const iso=`${p.year}-${p.month}-${p.day}`; let target=localWallTimeToUtc(`${iso}T${String(resetHour).padStart(2,'0')}:00:00`); if(target<=now) target=localWallTimeToUtc(`${iso}T${String(resetHour).padStart(2,'0')}:00:00`,1); return target-now; }
+export function logicalBoundaryAfter(day:string,resetHour=5) { const d=new Date(`${day}T00:00:00Z`);d.setUTCDate(d.getUTCDate()+1);return localWallTimeToUtc(`${d.toISOString().slice(0,10)}T${String(resetHour).padStart(2,'0')}:00:00`); }
+function localWallTimeToUtc(wall:string, addDays=0) { const d=new Date(wall+'Z');d.setUTCDate(d.getUTCDate()+addDays);let guess=d.getTime();for(let i=0;i<3;i++){const p=parts(new Date(guess));const actual=Date.UTC(+p.year,+p.month-1,+p.day,+p.hour);guess+=d.getTime()-actual;}return guess; }
+export { zone };

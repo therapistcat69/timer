@@ -1,0 +1,2 @@
+import {NextResponse} from 'next/server';import db from '@/lib/mongodb';import {authorized} from '@/lib/auth';import DailyLog from '@/models/DailyLog';
+export async function GET(req:Request){if(!(await authorized()))return NextResponse.json({error:'Unauthorized'},{status:401});await db();const {searchParams}=new URL(req.url);const limit=Math.min(200,Number(searchParams.get('limit')||180));return NextResponse.json(await DailyLog.find().sort({logicalDate:-1}).limit(limit).lean());}
